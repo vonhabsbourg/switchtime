@@ -95,7 +95,7 @@ int main(int argc, char* argv[]) {
             }
 
             time_t currentTime;
-            Result rs = timeGetCurrentTime(TimeType_NetworkSystemClock, (u64*)&currentTime);
+            Result rs = timeGetCurrentTime(TimeType_UserSystemClock, (u64*)&currentTime);
             if (R_FAILED(rs)) {
                 printf("timeGetCurrentTime failed with %x", rs);
                 return consoleExitWithMsg("");
