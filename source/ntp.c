@@ -29,7 +29,7 @@ information. */
 #include "ntp.h"
 
 bool nifmInternetIsConnected() {
-    Result rs = nifmInitialize();
+    Result rs = nifmInitialize(NifmServiceType_User);
     if (R_FAILED(rs)) {
         printf("Failed to get Internet connection status. Error code %x\n", rs);
         return false;
