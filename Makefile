@@ -46,10 +46,10 @@ INCLUDES	:=	include
 
 VERSION_MAJOR := 0
 VERSION_MINOR := 1
-VERSION_MICRO := 1
+VERSION_MICRO := 2
 
 APP_TITLE   := SwitchTime
-APP_AUTHOR  := 3096, thedax
+APP_AUTHOR  := ashakoor, 3096, thedax
 APP_VERSION := ${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
 
 #---------------------------------------------------------------------------------
