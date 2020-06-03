@@ -66,7 +66,7 @@ Result ntpGetTime(time_t *p_resultTime) {
     printf("Socket services initialized\n");
 
     int sockfd = -1;
-    const char *server_name = "0.pool.ntp.org";
+    const char *server_name = "time.cloudflare.com";
     const uint16_t port = 123;
 
     ntp_packet packet;
@@ -108,7 +108,7 @@ Result ntpGetTime(time_t *p_resultTime) {
         goto failed;
     }
 
-    printf("Connected to 0.pool.ntp.org with result: %x %x\nSending time request...\n", res, errno);
+    printf("Connected to time.cloudflare.com with result: %x %x\nSending time request...\n", res, errno);
 
     errno = 0;
     if ((res = send(sockfd, (char *)&packet, sizeof(ntp_packet), 0)) < 0) {
