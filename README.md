@@ -2,8 +2,8 @@
 Change NetworkSystemClock
 
 ## Credit
-- [@thedax](https://github.com/thedax) for NX-ntpc, from which this project is forked.
-- [@3096](https://github.com/3096) for switch-time, from which this project is basically a copy.
+- [@thedax](https://github.com/thedax) for NX-ntpc, from which the parent project is forked.
+- [@3096](https://github.com/3096) for switch-time, of which this project is almost a copy.
 
 ## Functionality
 - Change time by day/hour
