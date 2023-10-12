@@ -1,9 +1,28 @@
+/* This is free and unencumbered software released into the public domain.
+
+Anyone is free to copy, modify, publish, use, compile, sell, or distribute this software, either in source code form or
+as a compiled binary, for any purpose, commercial or non-commercial, and by any means.
+
+In jurisdictions that recognize copyright laws, the author or authors of this software dedicate any and all copyright
+interest in the software to the public domain. We make this dedication for the benefit of the public at large and to
+the detriment of our heirs and successors. We intend this dedication to be an overt act of relinquishment in perpetuity
+of all present and future rights to this software under copyright law.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+For more information, please refer to <https://unlicense.org> */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <switch.h>
 
 #include "ntp.h"
+
+PadState pad;
 
 bool setsysInternetTimeSyncIsOn() {
     Result rs = setsysInitialize();
@@ -71,10 +90,10 @@ int consoleExitWithMsg(char* msg) {
     printf("%s\n\nPress + to quit...", msg);
 
     while (appletMainLoop()) {
-        hidScanInput();
-        u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+        padUpdate(&pad);
+        u64 kDown = padGetButtonsDown(&pad);
 
-        if (kDown & KEY_PLUS) {
+        if (kDown & HidNpadButton_Plus) {
             consoleExit(NULL);
             return 0;  // return to hbmenu
         }
@@ -138,7 +157,9 @@ bool toggleHBMenuPath(char* curPath) {
 
 int main(int argc, char* argv[]) {
     consoleInit(NULL);
-    printf("SwitchTime v0.1.1\n\n");
+    padConfigureInput(8, HidNpadStyleSet_NpadStandard);
+    padInitializeAny(&pad);
+    printf("SwitchTime v0.1.3\n\n");
 
     if (!setsysInternetTimeSyncIsOn()) {
         // printf("Trying setsysSetUserSystemClockAutomaticCorrectionEnabled...\n");
@@ -154,20 +175,20 @@ int main(int argc, char* argv[]) {
         printf(
             "\n\n"
             "Press:\n\n"
-            "UP/DOWN to change hour | LEFT/RIGHT to change day\n"
+            "UP/DOWN to change hour | LEFT/RIGHT to change day | R/ZR to change year\n"
             "A to confirm time      | Y to reset to current time (Cloudflare time server)\n"
             "                       | + to quit\n\n\n");
 
-        int dayChange = 0, hourChange = 0;
+        int dayChange = 0, hourChange = 0, yearsChange = 0;
         while (appletMainLoop()) {
-            hidScanInput();
-            u64 kDown = hidKeysDown(CONTROLLER_P1_AUTO);
+            padUpdate(&pad);
+            u64 kDown = padGetButtonsDown(&pad);
 
-            if (kDown & KEY_PLUS) {
+            if (kDown & HidNpadButton_Plus) {
                 consoleExit(NULL);
                 return 0;  // return to hbmenu
             }
-            if (kDown & KEY_L) {
+            if (kDown & HidNpadButton_L) {
                 if (!toggleHBMenuPath(argv[0])) {
                     return 0;
                 }
@@ -181,17 +202,19 @@ int main(int argc, char* argv[]) {
             }
 
             struct tm* p_tm_timeToSet = localtime(&currentTime);
+            p_tm_timeToSet->tm_year += yearsChange;
             p_tm_timeToSet->tm_mday += dayChange;
             p_tm_timeToSet->tm_hour += hourChange;
+
             time_t timeToSet = mktime(p_tm_timeToSet);
 
-            if (kDown & KEY_A) {
+            if (kDown & HidNpadButton_A) {
                 printf("\n\n\n");
                 setNetworkSystemClock(timeToSet);
                 break;
             }
 
-            if (kDown & KEY_Y) {
+            if (kDown & HidNpadButton_Y) {
                 printf("\n\n\n");
                 rs = ntpGetTime(&timeToSet);
                 if (R_SUCCEEDED(rs)) {
@@ -200,14 +223,18 @@ int main(int argc, char* argv[]) {
                 break;
             }
 
-            if (kDown & KEY_LEFT) {
+            if (kDown & HidNpadButton_Left) {
                 dayChange--;
-            } else if (kDown & KEY_RIGHT) {
+            } else if (kDown & HidNpadButton_Right) {
                 dayChange++;
-            } else if (kDown & KEY_DOWN) {
+            } else if (kDown & HidNpadButton_Down) {
                 hourChange--;
-            } else if (kDown & KEY_UP) {
+            } else if (kDown & HidNpadButton_Up) {
                 hourChange++;
+            } else if (kDown & HidNpadButton_R) {
+                yearsChange--;
+            } else if (kDown & HidNpadButton_ZR) {
+                yearsChange++;
             }
 
             char timeToSetStr[25];
