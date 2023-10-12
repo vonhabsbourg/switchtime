@@ -176,6 +176,7 @@ int main(int argc, char* argv[]) {
             "\n\n"
             "Press:\n\n"
             "UP/DOWN to change hour | LEFT/RIGHT to change day | R/ZR to change year\n"
+            "L/ZL to change month   | R/ZR to change year\n"
             "A to confirm time      | Y to reset to current time (Cloudflare time server)\n"
             "                       | + to quit\n\n\n");
 
