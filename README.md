@@ -4,6 +4,7 @@ Change NetworkSystemClock
 ## Credit
 - [@thedax](https://github.com/thedax) for NX-ntpc, from which the parent project is forked.
 - [@3096](https://github.com/3096) for switch-time, of which this project is almost a copy.
+- [@Cytraen](https://github.com/Cytraen) for changing the servers to cloudfare.
 
 ## Functionality
 - Change time by day/hour
