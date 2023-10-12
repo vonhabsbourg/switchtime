@@ -179,7 +179,7 @@ int main(int argc, char* argv[]) {
             "A to confirm time      | Y to reset to current time (Cloudflare time server)\n"
             "                       | + to quit\n\n\n");
 
-        int dayChange = 0, hourChange = 0, yearsChange = 0;
+        int dayChange = 0, hourChange = 0, monthChange = 0,yearsChange = 0;
         while (appletMainLoop()) {
             padUpdate(&pad);
             u64 kDown = padGetButtonsDown(&pad);
@@ -188,7 +188,7 @@ int main(int argc, char* argv[]) {
                 consoleExit(NULL);
                 return 0;  // return to hbmenu
             }
-            if (kDown & HidNpadButton_L) {
+            if (kDown & HidNpadButton_Minus) {
                 if (!toggleHBMenuPath(argv[0])) {
                     return 0;
                 }
@@ -203,6 +203,7 @@ int main(int argc, char* argv[]) {
 
             struct tm* p_tm_timeToSet = localtime(&currentTime);
             p_tm_timeToSet->tm_year += yearsChange;
+            p_tm_timeToSet->tm_mon += monthChange;
             p_tm_timeToSet->tm_mday += dayChange;
             p_tm_timeToSet->tm_hour += hourChange;
 
@@ -235,6 +236,10 @@ int main(int argc, char* argv[]) {
                 yearsChange--;
             } else if (kDown & HidNpadButton_ZR) {
                 yearsChange++;
+            } else if (kDown & HidNpadButton_L) {
+                monthChange--;
+            } else if (kDown & HidNpadButton_ZL) {
+                monthChange++;
             }
 
             char timeToSetStr[25];
